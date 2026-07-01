@@ -6,32 +6,61 @@ function ToDoInputs({ heading = "My Tasks" }) {
 
   const addToDo = () => {
     if (input === "") {
-      console.log("nothing")
-      return
+      console.log("nothing");
+      return;
     }
-    setToDos([...todos, input])
-    setInput("")
-  }
+    setToDos([...todos, { id: Date.now(), text: input, completed: false }]);
+    setInput("");
+  };
 
+  const deleteToDo = (id) => {
+    setToDos(todos.filter((todo) => todo.id !== id));
+  };
+
+  const toggleToDo = (id) => {
+    setToDos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    );
+  };
 
   return (
     <>
       <h1>{heading}</h1>
-      <input
-        placeholder="What needs to be done?"
-        value={input}
-        onChange={(event) => setInput(event.target.value)}
-        onKeyDown={(event) => {
-          if(event.key === "Enter") {
-            addToDo();
-          }
-        }}
-      />
-      <button onClick={addToDo}>Add</button>
+      <div className="input-row">
+        <input
+          className="user-input"
+          placeholder="What needs to be done?"
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              addToDo();
+            }
+          }}
+        />
+        <button className="add-btn" onClick={addToDo}>
+          Add
+        </button>
+      </div>
 
-      <ul>
+      <ul className={todos.length > 0 ? "todo-list" : ""}>
         {todos.map((todo) => (
-          <li key={todo}>{todo}</li>
+          <li key={todo.id}>
+            <input
+              className="check-input"
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleToDo(todo.id)}
+            />
+            <span className={todo.completed ? "todo-text completed" : "todo-text"}>
+              {todo.text}
+            </span>
+            <button className="delete-btn" onClick={() => deleteToDo(todo.id)}>
+              x
+            </button>
+          </li>
         ))}
       </ul>
     </>
